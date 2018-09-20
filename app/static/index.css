@@ -1,0 +1,10 @@
+body {
+    background: lightblue;
+}
+.container {
+    max-width: 500px;
+    padding-top: 20px;
+}
+input {
+    max-width: 200px;
+}
