@@ -5,23 +5,76 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet" media="screen">
     <link href={{ url_for('static', filename='index.css') }} rel="stylesheet" media="screen">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+
   </head>
   <body>
     <div class="container">
-        <h1>Adder</h1>
-        <br>
-        <form role="form" method="post" onsubmit="return false;">
-            <div class="form-group">
-                <input type="number" class="form-control" name="number-one" placeholder="Enter a number" required>
-                <input type="number" class="form-control" name="number-two" placeholder="Enter a number" required>
-            </div>
-            <button type="submit" class="btn btn-default">Submit</button>
-        </form>
-        <br>
-        <p>The calculated value is <span id="results"></span></p>
+        <!-- Simple Textfield -->
+    <form action="#" id="search-form">
+      <div class="mdl-textfield mdl-js-textfield" id="search-box">
+        <input class="mdl-textfield__input" type="text" id="sample1">
+        <label class="mdl-textfield__label" for="sample1">Text...</label>
+      </div>
+    </form>
+  
+      <div id="vis"></div>
+      <script src="https://d3js.org/d3.v4.min.js"></script>
+      <script src="https://cdn.rawgit.com/olihawkins/d3-hexjson/master/build/d3-hexjson.js"></script>
+      <script>
+      d3.json("static/example.hexjson", function(error, hexjson) {
+      
+          // Set the size and margins of the svg
+          var w = window.innerWidth/2;
+          var h = window.innerHeight-100;
+        var margin = {top: 10, right: 10, bottom: 10, left: 10},
+          width = w - margin.left - margin.right,
+          height = h - margin.top - margin.bottom;
+      
+        // Create the svg element
+        var svg = d3
+          .select("#vis")
+          .append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+          .append("g")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+      
+        // Render the hexes
+        var hexes = d3.renderHexJSON(hexjson, width, height);
+      
+        // Bind the hexes to g elements of the svg and position them
+        var hexmap = svg
+          .selectAll("g")
+          .data(hexes)
+          .enter()
+          .append("g")
+          .attr("transform", function(hex) {
+            return "translate(" + hex.x + "," + hex.y + ")";
+          });
+      
+        // Draw the polygons around each hex's centre
+        hexmap
+          .append("polygon")
+          .attr("points", function(hex) {return hex.points;})
+          .attr("stroke", "white")
+          .attr("stroke-width", "2")
+          .attr("fill", "#bff5fc");
+      
+        // Add the hex codes as labels
+        hexmap
+          .append("text")
+          .append("tspan")
+          .attr("text-anchor", "middle")
+          .text(function(hex) {return hex.key;});
+      });
+      
+      </script>
     </div>
     <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
     <script src={{ url_for('static', filename='main.js') }}></script>
   </body>
 </html>
