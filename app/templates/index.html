@@ -12,65 +12,26 @@
   <body>
     <div class="container">
         <!-- Simple Textfield -->
-    <form action="#" id="search-form">
-      <div class="mdl-textfield mdl-js-textfield" id="search-box">
-        <input class="mdl-textfield__input" type="text" id="sample1">
-        <label class="mdl-textfield__label" for="sample1">Text...</label>
+      <div class="col-md-12" id="title_bar">
+        <span id="title"><strong>NatQuery</strong></span>
       </div>
-    </form>
-  
-      <div id="vis"></div>
+      <div class="col-md-1"></div>
+      <div class="col-md-3">
+        <div class="mdl-textfield mdl-js-textfield" id="search-box">
+          <input class="mdl-textfield__input" type="text" id="sample1">
+          <label class="mdl-textfield__label" for="sample1">Search...</label>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <img src="static/search.png" id="search_img">
+        <img src="static/voice.png"  id="voice_img">
+      </div>
+      
+      <div class="col-md-6">
+        <div id="vis"></div>
+      </div>
       <script src="https://d3js.org/d3.v4.min.js"></script>
       <script src="https://cdn.rawgit.com/olihawkins/d3-hexjson/master/build/d3-hexjson.js"></script>
-      <script>
-      d3.json("static/example.hexjson", function(error, hexjson) {
-      
-          // Set the size and margins of the svg
-          var w = window.innerWidth/2;
-          var h = window.innerHeight-100;
-        var margin = {top: 10, right: 10, bottom: 10, left: 10},
-          width = w - margin.left - margin.right,
-          height = h - margin.top - margin.bottom;
-      
-        // Create the svg element
-        var svg = d3
-          .select("#vis")
-          .append("svg")
-          .attr("width", width + margin.left + margin.right)
-          .attr("height", height + margin.top + margin.bottom)
-          .append("g")
-          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-      
-        // Render the hexes
-        var hexes = d3.renderHexJSON(hexjson, width, height);
-      
-        // Bind the hexes to g elements of the svg and position them
-        var hexmap = svg
-          .selectAll("g")
-          .data(hexes)
-          .enter()
-          .append("g")
-          .attr("transform", function(hex) {
-            return "translate(" + hex.x + "," + hex.y + ")";
-          });
-      
-        // Draw the polygons around each hex's centre
-        hexmap
-          .append("polygon")
-          .attr("points", function(hex) {return hex.points;})
-          .attr("stroke", "white")
-          .attr("stroke-width", "2")
-          .attr("fill", "#bff5fc");
-      
-        // Add the hex codes as labels
-        hexmap
-          .append("text")
-          .append("tspan")
-          .attr("text-anchor", "middle")
-          .text(function(hex) {return hex.key;});
-      });
-      
-      </script>
     </div>
     <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>

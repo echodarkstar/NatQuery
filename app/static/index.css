@@ -4,23 +4,24 @@
     text-align: center;
     font-family: sans-serif;
     font-size: 10pt;
-    position: relative;
-    left: 30vw;
-    top: -20vh;
-    max-width: 70vw;
+    max-width: 60vw;
     max-height: 80vh;
   }
 
-#search-box {
-    margin-top: 20vh;
+
+#search_img {
+    height: 5vh;
 }
 
-#search-form {
-    max-width: 50%;
-    max-height: 50%
+#voice_img {
+    height: 5vh;
 }
 
-body {
-    max-width: 90vw;
-    max-height: 900vh;
+#title {
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
+}
+
+#title_bar {
+    min-height: 15vh;
+    text-align: center;
 }
