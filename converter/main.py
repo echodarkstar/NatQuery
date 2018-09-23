@@ -4,7 +4,11 @@ import itertools
 import spacy
 from prettytable import PrettyTable
 
-
+'''
+Get pos tag info from text
+Input: str
+Output: list (nouns), list (verbs)
+'''
 def get_pos_tags(text):
     # text = preprocess(text)
     is_noun = lambda pos: pos[:2] == 'NN'
@@ -13,15 +17,17 @@ def get_pos_tags(text):
     pos_tags = [pos_tag(word_tokenize(sent)) for sent in sent_tokenize(text)]
     pos_tags = list(itertools.chain.from_iterable(pos_tags))
     print(pos_tags)
-    # print()
-    # print(pos_tags)
-    # print()    
     nouns = [word for (word, pos) in pos_tags if is_noun(pos)] 
     # nouns = [noun for noun in nouns if noun.lower() not in stopwords]
     verbs = [word for (word, pos) in pos_tags if is_verb(pos)] 
 
     return list(set(nouns)), verbs
 
+'''
+Spacy dependency parsing
+Input: str
+Output: PrettyTable
+'''
 def parse_dependency(text):
     t = PrettyTable(['Text','Lemma','POS','Tag','Dep','Shape','alpha','stop'])
     nlp = spacy.load('en')
@@ -30,7 +36,7 @@ def parse_dependency(text):
     for token in doc:
         t.add_row([token.text, token.lemma_, token.pos_, token.tag_, token.dep_,
             token.shape_, token.is_alpha, token.is_stop])
-    print(t)
+    return (t)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Enter natural language')
@@ -42,5 +48,5 @@ if __name__ == '__main__':
     nouns, verbs = (get_pos_tags(args.query))
     print("Nouns\t", nouns)
     print("Verbs\t", verbs)
-    print("Spacy")
-    parse_dependency(args.query)
+    print("Spacy dep parsing")
+    print(parse_dependency(args.query))

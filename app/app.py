@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 # from models import Actor, Film
 
-from config import *
+from app.config import *
 
 from sqlalchemy import text
 
@@ -13,8 +13,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
 db = SQLAlchemy(app)
 db.create_all()
 db.session.commit()
-
-# routes
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
