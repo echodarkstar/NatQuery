@@ -1,13 +1,18 @@
-$(document).ready(function() {
-    console.log("ready!");
-  });
+$(document).ready(function () {
+  console.log("ready!");
+});
 
-  d3.json("static/example.hexjson", function(error, hexjson) {
-      
-    // Set the size and margins of the svg
-    var w = window.innerWidth/2;
-    var h = window.innerHeight/2;
-    var margin = {top: 10, right: 10, bottom: 10, left: 10},
+d3.json("static/example.hexjson", function (error, hexjson) {
+
+  // Set the size and margins of the svg
+  var w = window.innerWidth / 2 - 100;
+  var h = window.innerHeight / 2;
+  var margin = {
+      top: 10,
+      right: 10,
+      bottom: 10,
+      left: 10
+    },
     width = w - margin.left - margin.right,
     height = h - margin.top - margin.bottom;
 
@@ -29,14 +34,16 @@ $(document).ready(function() {
     .data(hexes)
     .enter()
     .append("g")
-    .attr("transform", function(hex) {
+    .attr("transform", function (hex) {
       return "translate(" + hex.x + "," + hex.y + ")";
     });
 
   // Draw the polygons around each hex's centre
   hexmap
     .append("polygon")
-    .attr("points", function(hex) {return hex.points;})
+    .attr("points", function (hex) {
+      return hex.points;
+    })
     .attr("stroke", "white")
     .attr("stroke-width", "2")
     .attr("fill", "#bff5fc");
@@ -46,5 +53,28 @@ $(document).ready(function() {
     .append("text")
     .append("tspan")
     .attr("text-anchor", "middle")
-    .text(function(hex) {return hex.key;});
+    .text(function (hex) {
+      return hex.key;
+    });
 });
+
+window.SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
+
+const recognition = new SpeechRecognition();
+const icon = document.getElementById('voice')
+const speech_box = document.getElementById('speech_box');
+
+icon.addEventListener('click', () => {
+  dictate();
+});
+
+const dictate = () => {
+  recognition.start();
+  recognition.onresult = (event) => {
+    const speechToText = event.results[0][0].transcript;
+
+    speech_box.value = speechToText;
+    console.log(speech_box.textContent);
+    speech_box.disabled = false;
+  }
+}

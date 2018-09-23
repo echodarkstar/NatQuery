@@ -6,22 +6,21 @@
     font-size: 10pt;
     max-width: 60vw;
     max-height: 80vh;
-  }
+}
 
 
 #search_img {
-    height: 5vh;
+    height: 2.5vh;
 }
 
 #voice_img {
-    height: 5vh;
+    height: 2.5vh;
 }
 
-#title {
+body {
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
 }
 
 #title_bar {
-    min-height: 15vh;
     text-align: center;
 }
