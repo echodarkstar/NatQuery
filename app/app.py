@@ -1,14 +1,12 @@
 from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-# from models import Actor, Film
-
-from app.config import *
+#from models import *
 
 from sqlalchemy import text
 
 # initilize flask
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://darkstar:password@localhost/pagila"
 
 db = SQLAlchemy(app)
 db.create_all()
@@ -16,9 +14,9 @@ db.session.commit()
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
-    #actors = db.session.query(Actor).all()
-    sql = text("select * from Film where film_id = 20")
-    result = db.engine.execute(sql)
+    result = db.session.query(Film).all()
+    #sql = text("select * from Film")
+    #result = db.engine.execute(sql)
     return render_template('index.html', result=result)
 
 # run the server
