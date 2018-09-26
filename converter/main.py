@@ -11,12 +11,16 @@ from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import load_only
 from spacy import displacy
 from operator import attrgetter
-
+from sqlalchemy.inspection import inspect
+from nltk.corpus import wordnet
+from itertools import product
 
 nlp = spacy.load('en')
 
 db_infodict = db_info()
-print_dict(db_infodict, len(db_infodict.keys()))
+# print_dict(db_infodict, len(db_infodict.keys()))
+tables_list = db_infodict.keys()
+#MAKE DB_TOKENS INTO SET FOR BETTER PERFORMANCE
 db_tokens = []
 for token1 in db_infodict.keys():
     db_tokens.append(nlp(token1))
@@ -56,6 +60,18 @@ def get_pos_tags(text):
 
     return list(set(nouns)), verbs
 
+def nounify(verb_word):
+    # set_of_related_nouns = set()
+    for lemma in wordnet.lemmas(wordnet.morphy(verb_word, wordnet.VERB), pos="v"):
+        for related_form in lemma.derivationally_related_forms():
+            for synset in wordnet.synsets(related_form.name(), pos=wordnet.NOUN):
+                if wordnet.synset('person.n.01') in synset.closure(lambda s:s.hypernyms()):
+                    return (synset.lemmas()[0].name())
+                    # for l in synset.lemmas():
+                    #     set_of_related_nouns.add(l.name())
+    # return set_of_related_nouns
+
+ 
 '''
 Spacy dependency parsing
 Input: str
@@ -65,54 +81,77 @@ def parse_dependency(text):
     t = PrettyTable(['Text','Lemma','POS','Tag','Dep','Shape','alpha','stop'])
     doc = nlp(text)
     print("")
-    # noun_list = []
-    # adj_list = []
-    # verb_list = []
     ner_list = []
-    # modifiers = []
     tables = []
     columns = []
     values = []
     agg = []
 
     is_noun = lambda pos: pos[:2] == 'NN'
+    is_verb = lambda pos: pos[:2] == 'VB'
+    is_proper = lambda pos: pos[:3] == 'NNP'
     is_mod = lambda pos: pos[-3:] == 'mod'
     nl_infodict = {}
+
+    # allsyns1 = set(ss for word in doc for ss in wordnet.synsets(str(word)))
+    # allsyns2 = set(ss for word in db_tokens for ss in wordnet.synsets(str(word)))
+    # # print(allsyns1)
+    # # print(allsyns2)
+    # best = sorted(((wordnet.wup_similarity(s1, s2) or 0, s1, s2) for s1, s2 in 
+    #         product(allsyns1, allsyns2)), reverse=True)[:5]
+    # for i in best:
+    #     print(i)
+
+    # for chunk in doc.noun_chunks:
+    #     print(chunk.text)
     for token in doc:
-        #nl_infodict['token_info'][str(token)] = [token.text, token.lemma_, token.pos_, token.tag_, token.dep_, [child for child in token.children]]
         token_list = [token.text, token.lemma_, token.pos_, token.tag_, token.dep_, [child for child in token.children]]
         print(token_list)
         token_lemma = nlp(token.lemma_)
-        #print(token.text, token.is_stop)
-        if is_noun(token.tag_):
-            for dbtok in db_tokens:
-                if token_lemma.similarity(dbtok) == 1.0:
-                    tables.append(dbtok) 
-                # print(token.lemma_, dbtok.text, type(token_lemma.similarity(dbtok)))
+
+        if is_noun(token.tag_) and not is_proper(token.tag_):
+            if token.lemma_ in tables_list: #If non proper noun is there in table set
+                tables.append(token.lemma_)
+            else:                         #Else find synonyms and check those in table set
+                for syn in wordnet.synsets(str(token)):
+                    for l in syn.lemmas():
+                        if l.name() in tables_list: 
+                            tables.append(l.name())
+        elif is_verb(token.tag_):
+            modified_verb = nounify(token.lemma_)
+            if modified_verb in tables_list:
+                tables.append(modified_verb)
+            print(modified_verb)
+
+        # if is_noun(token.tag_) or is_verb(token.tag_):
+        #     for dbtok in db_tokens:
+        #         if token_lemma.similarity(dbtok) == 1.0:
+        #             tables.append(dbtok)
+        #         else:
+        #             if not is_proper(token.tag_) and is_noun(token.tag_):
+        #                 synonyms = []
+        #                 for syn in wordnet.synsets(str(token)):
+        #                     for l in syn.lemmas():
+        #                         token_lemma = nlp(l.name())
+        #                         # if l.name() != token.tag_:
+        #                         if token_lemma.similarity(dbtok) == 1.0:
+        #                             tables.append(dbtok)
+        #             elif is_verb(token.tag_):
+        #                 modified_verb = nounify(token.lemma_)
+        #                 print(modified_verb)
+
+                        #             synonyms.append(l.name())
+                        # synonyms = set(synonyms)
+                        # print("Synonyms --", synonyms)
+
+         
+                # print(token.lemma_, dbtok.text, (token_lemma.similarity(dbtok)))
     print(tables)
-        # if is_mod(token_list[4]):
-        #     modifiers.append(token_list)
-        # if is_noun(token_list[3]):
-        #     noun_list.append(token_list) 
-        # elif 'ADJ' in token_list:
-        #     adj_list.append(token_list)
-        # elif 'VERB' in token_list:
-        #     verb_list.append(token_list)
-        # else:
-        #     print(token_list)
-        #t.add_row([token.text, token.lemma_, token.pos_, token.tag_, token.dep_, token.shape_, token.is_alpha, token.is_stop])
     for ent in doc.ents:
         ner_list.append([ent.text, ent.label_])
-
-    # nl_infodict['noun'] = noun_list
-    # nl_infodict['verb'] = verb_list
-    # nl_infodict['adj'] = adj_list
-    # nl_infodict['ner'] = ner_list
-    # nl_infodict['modifiers'] = modifiers
-    #displacy.render(doc, style='dep')
     query_info = {}
     query_info["tables"] = tables
-    # query_info["columns"] = 
+
     return (query_info)
 
 # def create_sketch():
@@ -127,21 +166,40 @@ def parse_dependency(text):
 #         }]
 #     }
 
+def result_formatter(result, columns):
+    for x in result:
+        my_attrs = attrgetter(*columns)(x)
+        return my_attrs
+
 def db_element_selector(query_info):
     print("-"*100 )
     tables = query_info["tables"]
     if len(tables) ==1:
         table_name = str(tables[0])
-        columns = ['title', 'rating']
-        result = db.session.query(class_mapping[table_name]).options(load_only(*columns))        
+        columns = db_infodict[table_name]
+        result = (db.session
+                    .query(class_mapping[table_name])
+                    .options(load_only(*columns))  )      
         generate_query(result)
+        # result_formatter(result, ['title', 'rating'])
         #return result
-        # for x in result:
-        #     my_attrs = attrgetter('title', 'rating')(x)
-        #     # fcall = getattr(x, 'title')
-        #     print(my_attrs)
-        #     print("")
     else:
+        table1 = class_mapping[str(tables[0])]
+        table2 = class_mapping[str(tables[1])]
+
+        t1_pid = (inspect(table1).primary_key[0].name)
+        t2_pid = (inspect(table2).primary_key[0].name)     
+        pid_list = [t1_pid,t2_pid]   
+        pivot = ""
+        for tbl, col in db_infodict.items():
+            if set(pid_list).issubset(set(col)):
+                pivot = class_mapping[str(tbl)]
+        # tables.append(pivot)
+        result = (db.session
+            .query(pivot, table1, table2)
+            .join(table1)
+            .join(table2))      
+        generate_query(result)
         print("More than 1 table")
 
 def generate_query(query_obj):
