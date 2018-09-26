@@ -1,0 +1,11 @@
+{
+	"main_query":{
+		"ques":"Select why melody is chocolaty",
+		"output":"Melody khao,khud jaan jao",
+		"interpreted_words":"Melody, chocolaty"},
+	"Related_queries":{
+		"0":"Ques 1",
+		"1":"Ques 2",
+		"2":"Ques 3"
+	}
+}

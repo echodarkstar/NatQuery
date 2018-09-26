@@ -12,15 +12,16 @@
 </head>
 
 <body>
-  <div class="container">
-    <!-- Simple Textfield -->
+  <div class="container" id="container">
     <div class="col-md-12 page-header" id="title_bar">
+      <!-- Title -->
       <span id="title">
         <h2>NatQuery</h2>
       </span>
     </div>
-    <div class="col-md-1"></div>
-    <div class="col-md-5">
+    <!-- Search bar -->
+    <div class="col-md-2"></div>
+    <div class="col-md-8" id="main">
       <div class="panel panel-info">
         <div class="panel-heading">Query</div>
         <div class="panel-body">
@@ -30,36 +31,25 @@
               <button class="btn btn-default" id="voice" type="button">
                 <img src="static/voice.png" id="voice_img">
               </button>
-              <button class="btn btn-default" id="voice" type="button">
+              <button class="btn btn-default" id="search" type="button" onclick="search()">
                 <img src="static/search.png" id="search_img">
               </button>
             </span>
           </div>
-
-
         </div>
       </div>
+      
     </div>
-    <!-- <div class="col-md-1"></div> -->
+    
 
-    <div class="col-md-6">
-      <div class="panel panel-info">
-        <div class="panel-heading">
-          Output
-        </div>
-        <div class="panel-body">
-          <div id="vis"></div>
-        </div>
-      </div>
-
-    </div>
+    
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="https://cdn.rawgit.com/olihawkins/d3-hexjson/master/build/d3-hexjson.js"></script>
   </div>
   <!-- Iterating over database -->
-  {% for value in result %}
+  <!-- {% for value in result %}
     <div><p>{{ value.title }} </b></p></div>
-    {% endfor %}
+    {% endfor %} -->
   <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
   <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
   <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
