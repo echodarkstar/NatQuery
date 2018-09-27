@@ -18,6 +18,7 @@ from nltk.corpus import wordnet
 from itertools import product
 nlp = spacy.load('en')
 import math
+from sqlalchemy import func
 
 db_infodict = db_info()
 print_dict(db_infodict, len(db_infodict.keys()))
@@ -65,7 +66,14 @@ def nounify(verb_word):
                     #     set_of_related_nouns.add(l.name())
     # return set_of_related_nouns
 
-
+def join_nouns(token_list, values, used_nouns):
+    
+    for x in token_list[-1]:
+        if x.text in values:
+            used_nouns.append(x.text)
+            values.remove(x.text)
+            values.append(x.text + " " + token_list[0])
+            return values
 '''
 Spacy dependency parsing
 Input: str
@@ -81,12 +89,12 @@ def parse_dependency(text):
     values = []
     agg = []
     schema = {}
-
+    # extra_cols = []
     is_noun = lambda pos: pos[:2] == 'NN'
     is_verb = lambda pos: pos[:2] == 'VB'
     is_proper = lambda pos: pos[:3] == 'NNP'
     is_mod = lambda pos: pos[-3:] == 'mod'
-
+    is_wq = lambda pos: pos[0] == 'W'
     is_subj = lambda pos: pos == 'nsubj'
     n_subj = []
     nl_infodict = {}
@@ -94,45 +102,84 @@ def parse_dependency(text):
     # print(word_similarity("location", "store"))
     # for chunk in doc.noun_chunks:
     #     print(chunk.text)
-    for token in doc:
+    used_nouns = []
+    used_word_index = 0
+    text_list = text.split()
+    last_index = 0
+    for index,token in enumerate(doc):
         token_list = [token.text, token.lemma_, token.pos_, token.tag_, token.dep_, [child for child in token.children]]
         print(token_list)
         token_lemma = nlp(token.lemma_)
-
+        
+        if is_wq(token.tag_):
+            used_nouns.append(token.lemma_)
         if is_subj(token.dep_):
             n_subj.append(token.lemma_)
         if is_noun(token.tag_) and not is_proper(token.tag_):
             if token.lemma_ in tables_list: #If non proper noun is there in table set
                 tables.append(token.lemma_)
-            else:                         #Else find synonyms and check those in table set
+                used_nouns.append(token.lemma_)
+                used_word_index = index
+                # values += [x for x in text_list[index+1:] if is_noun(x) and x not in tables_list]
+            else:
+                syn_flag = False                         #Else find synonyms and check those in table set
                 for syn in wordnet.synsets(str(token)):
                     for l in syn.lemmas():
-                        if l.name() in tables_list: 
+                        if l.name() in tables_list:
+                            syn_flag = True 
                             tables.append(l.name())
+                            used_nouns.append(token.lemma_)
+                            used_word_index = index
+                            break     
+                if not syn_flag:
+                    if len(token_list[-1]) != 0:
+                        # values += ([x.text + " " + token.text for x in token_list[-1] if x.text in values])
+                        # values.remove('b')
+                        values = (join_nouns(token_list, values, used_nouns))
+                    else:
+                        values.append(token.text)           
         elif is_verb(token.tag_):
-            modified_verb = nounify(token.lemma_)
-            flag = [token.lemma_ for w2 in tables_list if is_similar(token.lemma_,w2)]
-            # print("VERBLIST---- ", flag)
-            if modified_verb in tables_list and len(flag)>0:
-                tables.append(modified_verb)
-            # print(modified_verb)
+            try:
+                modified_verb = nounify(token.lemma_)
+                flag = [token.lemma_ for w2 in tables_list if is_similar(token.lemma_,w2)]
+                # print("VERBLIST---- ", flag)
+                if modified_verb in tables_list and len(flag)>0:
+                    tables.append(modified_verb)
+            except Exception as e:
+                print("Nounify - ", e)
+        if is_proper(token.tag_):
+            values.append(token.text)
 
-    # print(tables)
+        last_index += 1
+            # print(modified_verb)
     for ent in doc.ents:
         ner_list.append([ent.text, ent.label_])
-    # print("NER " ,ner_list)
+    print("NER " ,ner_list)
+    if len(ner_list) !=0:
+        for x in ner_list:
+            if not any(x[0] in val for val in values):
+            # if x[0] not in values:
+                values.append(x[0])
     for tab in tables:
         for tok in n_subj:
-            print(tok)
+            # print(tok)
             columns = [x for x in db_infodict[tab] if tok in x]
             schema[tab] = columns
             # if any(tok in sl for sl in db_infodict[tab]):
-            # print("COLUMN CANDIDATE- ",columns)
+            print("COLUMN CANDIDATE- ",columns)
 
+
+    #DO ANOTHER CHECK. SEE IF ANYTHING IN VALUES AND COLUMNS IS COMMON. REMOVE THE COMMON ELEMENT.
+    values = [i for i in values if i not in columns]
     query_info = {}
     query_info["tables"] = tables
     query_info["columns"] = columns
     query_info["schema"] = schema
+    query_info["values"] = values
+    
+    print("Used nouns", used_nouns)
+    print("VALUES - ", values)
+
     return (query_info)
 
 def result_formatter(result, columns):
@@ -150,21 +197,23 @@ def object_as_dict(obj):
     return {c.key: getattr(obj, c.key)
             for c in inspect(obj).mapper.column_attrs}
 
+#PROBLEM QUERY - Display rentals of film (Case : rental and film have no common )
+#give me the district with the postal code of 400094 address
+
 def db_element_selector(query_info):
     print("-"*100 )
     tables = query_info["tables"]
     columns = query_info["columns"]
-    
         # columns = [item for sublist in db_infodict.values() for item in sublist]
     schema = query_info["schema"]
-    # print(schema)
+    print(tables)
     if len(columns) != 0:
         obj_col_list = [getattr(class_mapping[str(tab)], x) for tab,col in schema.items() for x in col ]
     else:
         for tab in tables:
             schema[tab] = db_infodict[tab]
         obj_col_list = [getattr(class_mapping[str(tab)], x) for tab,col in schema.items() for x in col ]
-    print(obj_col_list)
+    # print(obj_col_list)
     if len(tables) ==1:
         table_name = str(tables[0])
         columns = db_infodict[table_name]
@@ -186,9 +235,9 @@ def db_element_selector(query_info):
         pid_list = [t1_pid,t2_pid]  
 
         common1 = list(set(db_infodict[tables[0]]).intersection(db_infodict[tables[1]]))
-
+        print("COMMON - ",common1)
         #If the two tables have no col in common, then there exists a relationship table between them
-        if len(common1) == 1:   
+        if len(common1) == 0:   
             pivot = ""
             for tbl, col in db_infodict.items():
                 if set(pid_list).issubset(set(col)):
@@ -202,8 +251,7 @@ def db_element_selector(query_info):
                 .with_entities(*obj_col_list))
         else:
             result = (db.session
-                .query(table1)
-                    .join(table2)
+                .query(table1, table2)
                     .with_entities(*obj_col_list))
                 # .filter(Actor.actor_id == FilmActor.actor_id)
                 # .filter(Film.film_id == FilmActor.film_id)

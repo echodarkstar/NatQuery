@@ -30,7 +30,7 @@ def db_info():
     db_tables = (db.engine.table_names())
     mapping = {}
     for table in db_tables:
-        mapping[table] = [x[0] for x in db.engine.execute("select column_name from information_schema.columns where table_name = '" + table + "'")]
+        mapping[table] = [x[0] for x in db.engine.execute("select column_name from information_schema.columns where table_name = '" + table + "'") if x[0] != 'last_update']
     return (mapping)
 
 '''

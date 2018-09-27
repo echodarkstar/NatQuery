@@ -15,7 +15,7 @@ db.session.commit()
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
-    result = db.session.query(Film).all()
+    result = []
     #sql = text("select * from Film")
     #result = db.engine.execute(sql)
     return render_template('index.html', result=result)
