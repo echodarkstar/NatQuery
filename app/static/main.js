@@ -26,8 +26,27 @@ const dictate = () => {
 }
 
 function send_query(){
-
+  $.getJSON($SCRIPT_ROOT + '/query',{
+    nat_query : $("#speech_box").val()
+  },function(data){
+    console.log("Data: " + data);
+  });
+  return false;
 }
+  
+//   console.log(query_data)
+//   $.post( "/query", {
+//     nat_query: query_data
+//   },
+//   function(data){
+    
+//   });
+// })
+  
+
+
+
+
 
 function search() {
   $.getJSON("static/example.json", function (data) {

@@ -12,6 +12,9 @@
 </head>
 
 <body>
+  <script type=text/javascript>
+    $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+  </script>
   <div class="container" id="container">
     <div class="col-md-12 page-header" id="title_bar">
       <!-- Title -->
@@ -39,7 +42,7 @@
               <button class="btn btn-default" id="voice" type="button">
                 <img src="static/voice.png" id="voice_img">
               </button>
-              <button class="btn btn-default" id="search" type="button" onclick="search()">
+              <button class="btn btn-default" id="search" type="button" onclick="send_query()">
                 <img src="static/search.png" id="search_img">
               </button>
             </span>

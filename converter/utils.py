@@ -1,5 +1,5 @@
 import json
-from app.app import app,db
+# from app.app import app,db
 
 '''
 Get json content as dictionary
@@ -26,11 +26,11 @@ Get database info
 Input:  no input
 Output: dict (table:columns)
 '''
-def db_info():
+def db_info(db):
     db_tables = (db.engine.table_names())
     mapping = {}
     for table in db_tables:
-        mapping[table] = [x[0] for x in db.engine.execute("select column_name from information_schema.columns where table_name = '" + table + "'") if x[0] != 'last_update']
+        mapping[table] = [x[0] for x in db.engine.execute("select column_name from information_schema.columns where table_name = '" + table + "'") if (x[0] != 'last_update' and x[0] != 'special_features')]
     return (mapping)
 
 '''
