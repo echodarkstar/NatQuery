@@ -193,10 +193,17 @@ function render_db(){
       db_panel_footer.setAttribute("class","panel-footer");
       db_panel_footer.setAttribute("id","columns_"+keys[i]);
       db_panel_footer.setAttribute("style","display:none");
+      var image = document.createElement("img");
+      image.setAttribute("src","static/arrow.png");
+      // image.setAttribute("style","float:right");
+      image.setAttribute("height","8em");
+      image.setAttribute("id","img_"+keys[i]);
+      // image.setAttribute("onclick","rotated(this.id)");
       for(var j in data[keys[i]]){
-        var list =  data[keys[i]][j] + "\n";
+        var list =  data[keys[i]][j] + "<br>";
         db_panel_footer.innerHTML += list;
       }
+      db_panel_body.appendChild(image);
       db_panel_body.appendChild(db_panel_footer);
       // db_panel.appendChild(db_panel_body);
       // db_panel_body_container.appendChild(db_panel_body);
