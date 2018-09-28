@@ -20,7 +20,15 @@
       </span>
     </div>
     <!-- Search bar -->
-    <div class="col-md-2"></div>
+    <div class="col-md-2">
+      <div class="panel panel-default" id="db_div">
+      <div class="panel-heading">
+        Database Schema
+      </div>
+      <div id="db_container"></div>
+    </div>
+    </div>
+    
     <div class="col-md-8" id="main">
       <div class="panel panel-info">
         <div class="panel-heading">Query</div>
@@ -47,7 +55,7 @@
     {% endfor %} -->
   <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
   <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-  <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+  <!-- <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script> -->
   <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.0.2/anime.js"></script> -->
   <script src={{ url_for('static', filename='main.js') }}></script>
   <script src={{ url_for('static', filename='anime.min.js') }}></script>

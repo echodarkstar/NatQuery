@@ -17,3 +17,9 @@ body {
 #speech_box {
     z-index: 0;
 }
+
+#db_container {
+    max-height: 30em;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
