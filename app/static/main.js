@@ -175,7 +175,7 @@ function render_db(){
       db_panel_footer.setAttribute("id","columns_"+keys[i]);
       db_panel_footer.setAttribute("style","display:none");
       for(var j in data[keys[i]]){
-        var list = "<li>" + data[keys[i]][j] + "</li>";
+        var list =  data[keys[i]][j] + "\n";
         db_panel_footer.innerHTML += list;
       }
       db_panel_body.appendChild(db_panel_footer);
