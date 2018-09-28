@@ -23,3 +23,7 @@ body {
     overflow-y: scroll;
     overflow-x: hidden;
 }
+
+#product_img {
+    height: 7em;
+}

@@ -57,11 +57,63 @@ function search() {
     // console.log(main_query,interpreted_words,output,related_queries);
     // console.log(data);
     // document.getElementById("speech_box").value = main_query;
+    $("#main").empty();
 
     //creating related queries div outside the main
     document.getElementById("main").setAttribute("class", "col-md-6");
+    var input_box = document.createElement("div");
+    input_box.setAttribute("class","panel panel-info");
+    var input_box_head = document.createElement("div");
+    input_box_head.setAttribute("class","panel-heading");
+    input_box_head.innerHTML = "Query";
+    var input_box_body = document.createElement("div");
+    input_box_body.setAttribute("class","panel-body");
+    var input_box_body_div = document.createElement("div");
+    input_box_body_div.setAttribute("class","input-group btn-group");
+    input_box_body_div.setAttribute("role","group");
+    var input_box_body_input = document.createElement("input");
+    input_box_body_input.setAttribute("type","text");
+    input_box_body_input.setAttribute("class","form-control");
+    input_box_body_input.setAttribute("id","speech_box");
+    input_box_body_input.setAttribute("placeholder","Type your query...");
+    var input_box_body_span = document.createElement("span");
+    input_box_body_span.setAttribute("class","input-group-btn");
+    var input_box_body_input_button1 = document.createElement("button");
+    input_box_body_input_button1.setAttribute("type","button");
+    input_box_body_input_button1.setAttribute("id","voice");
+    input_box_body_input_button1.setAttribute("class","btn btn-default");
+    var voice_img = document.createElement("img");
+    voice_img.setAttribute("src","static/voice.png");
+    voice_img.setAttribute("id","voice_img");
+
+
+    var input_box_body_input_button2 = document.createElement("button");
+    input_box_body_input_button2.setAttribute("type","button");
+    input_box_body_input_button2.setAttribute("id","search");
+    input_box_body_input_button2.setAttribute("class","btn btn-default");
+
+    var search_img = document.createElement("img");
+    search_img.setAttribute("src","static/search.png");
+    search_img.setAttribute("id","search_img");
+    input_box_body_input_button2.appendChild(search_img);
+    input_box_body_input_button1.appendChild(voice_img);
+    input_box_body_span.appendChild(input_box_body_input_button1);
+    input_box_body_span.appendChild(input_box_body_input_button2);
+    // input_box_body_input.appendChild(input_box_body_span);
+    input_box_body_div.appendChild(input_box_body_input);
+    input_box_body_div.appendChild(input_box_body_span);
+    input_box_body.appendChild(input_box_body_div);
+
+    input_box.appendChild(input_box_head);
+    input_box.appendChild(input_box_body);
+    document.getElementById("main").appendChild(input_box);
+
+
+
+
+
     var related_box = document.createElement("div");
-    related_box.setAttribute("class", "col-md-4");
+    related_box.setAttribute("class", "col-md-3");
     document.getElementById("container").appendChild(related_box);
 
     //populating div with JSON
@@ -139,11 +191,25 @@ function search() {
     output_div.appendChild(output_div_head);
     output_div.appendChild(output_div_body);
     document.getElementById("main").appendChild(output_div);
+
+    //Suggestions div
+    var suggestion_div = document.createElement("div");
+    suggestion_div.setAttribute("class","panel panel-info");
+    var suggestion_div_head = document.createElement("div");
+    suggestion_div_head.setAttribute("class","panel-heading");
+    suggestion_div_head.innerHTML = "Suggestions";
+    var suggestion_div_body = document.createElement("div");
+    suggestion_div_body.setAttribute("class","panel-body");
+    suggestion_div_body.innerHTML = "...";
+    suggestion_div.appendChild(suggestion_div_head);
+    suggestion_div.appendChild(suggestion_div_body);
+    related_box.appendChild(suggestion_div);
+
   })
 }
 
-console.log(document.getElementById("speech_box").clientHeight);
-console.log(document.getElementById("voice").clientHeight);
+// console.log(document.getElementById("speech_box").clientHeight);
+// console.log(document.getElementById("voice").clientHeight);
 
 //Animation functions
 
