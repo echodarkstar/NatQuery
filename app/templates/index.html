@@ -4,10 +4,11 @@
 <head>
   <title>NatQuery</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet" media="screen">
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" media="screen">
   <link href={{ url_for('static', filename='index.css') }} rel="stylesheet" media="screen">
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css">
 
 </head>
 
@@ -15,7 +16,7 @@
   <script type=text/javascript>
     $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
   </script>
-  <div class="container" id="container">
+  <div id="container">
     <div class="col-md-12 page-header" id="title_bar">
       <!-- Title -->
       <span id="title">
@@ -39,10 +40,10 @@
           <div class="input-group btn-group" role="group">
             <input type="text" class="form-control" id="speech_box" placeholder="Type your query...">
             <span class="input-group-btn">
-              <button class="btn btn-default" id="voice" type="button">
+              <button class="btn btn-default" id="voice" type="button" onclick="speak(this.value)">
                 <img src="static/voice.png" id="voice_img">
               </button>
-              <button class="btn btn-default" id="search" type="button" onclick="search()">
+              <button class="btn btn-default" id="search" type="button" onclick="search(this.value)">
                 <img src="static/search.png" id="search_img">
               </button>
             </span>
@@ -56,8 +57,13 @@
   <!-- {% for value in result %}
     <div><p>{{ value.title }} </b></p></div>
     {% endfor %} -->
-  <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
   <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+  
+  <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/json2html/1.2.0/json2html.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.json2html/1.2.0/jquery.json2html.min.js"></script>
   <!-- <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script> -->
   <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.0.2/anime.js"></script> -->
   <script src={{ url_for('static', filename='main.js') }}></script>

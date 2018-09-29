@@ -2,63 +2,55 @@ $(document).ready(function () {
   console.log("ready!");
   // hidden();
 });
-
-var main_query, related_queries, output, interpreted_words;
-window.SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
-
-const recognition = new SpeechRecognition();
-const icon = document.getElementById('voice')
-const speech_box = document.getElementById('speech_box');
-
-icon.addEventListener('click', () => {
-  dictate();
-});
-
-const dictate = () => {
-  recognition.start();
-  recognition.onresult = (event) => {
-    const speechToText = event.results[0][0].transcript;
-
-    speech_box.value = speechToText;
-    console.log(speech_box.textContent);
-    speech_box.disabled = false;
+function speak() {
+  var main_query, related_queries, output, interpreted_words;
+  window.SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
+  
+  const recognition = new SpeechRecognition();
+  const icon = document.getElementById('voice')
+  const speech_box = document.getElementById('speech_box');
+  
+  icon.addEventListener('click', () => {
+    dictate();
+  });
+  
+  const dictate = () => {
+    recognition.start();
+    recognition.onresult = (event) => {
+      const speechToText = event.results[0][0].transcript;
+  
+      speech_box.value = speechToText;
+      console.log(speech_box.textContent);
+      speech_box.disabled = false;
+    }
   }
 }
 
-function send_query(){
-  $.getJSON($SCRIPT_ROOT + '/query',{
-    nat_query : $("#speech_box").val()
-  },function(data){
-    console.log("Data: " + data);
-  });
-  return false;
-}
-  
-//   console.log(query_data)
-//   $.post( "/query", {
-//     nat_query: query_data
-//   },
-//   function(data){
-    
-//   });
-// })
-  
 
 
 
-
+var search_query = $("#speech_box").val();
+console.log(search_query);
 
 function search() {
-  $.getJSON("static/example.json", function (data) {
-    var main_query = data["main_query"]["ques"];
-    var interpreted_words = data["main_query"]["interpreted_words"];
-    var output = data["main_query"]["output"];
-    var related_queries = data["Related_queries"];
+  $.getJSON($SCRIPT_ROOT + '/query',{
+    nat_query : $("#speech_box").val()
+  }, function (data) {
+    json_data = JSON.parse(data)
+    console.log(json_data["sql_query"])
+    var search_query = json_data["nl_query"];
+    var main_query = json_data["sql_query"];
+    var interpreted_words = json_data["interpreted"];
+    var output = json_data["output"];
+    // console.log(json_data["output"])
+    var related_queries =json_data["related_queries"];
+    // console.log(related_queries);
     // console.log(main_query,interpreted_words,output,related_queries);
     // console.log(data);
     // document.getElementById("speech_box").value = main_query;
     $("#main").empty();
-
+    $("#side").remove();
+    // console.log(value);
     //creating related queries div outside the main
     document.getElementById("main").setAttribute("class", "col-md-6");
     var input_box = document.createElement("div");
@@ -76,12 +68,14 @@ function search() {
     input_box_body_input.setAttribute("class","form-control");
     input_box_body_input.setAttribute("id","speech_box");
     input_box_body_input.setAttribute("placeholder","Type your query...");
+    input_box_body_input.setAttribute("value",search_query);
     var input_box_body_span = document.createElement("span");
     input_box_body_span.setAttribute("class","input-group-btn");
     var input_box_body_input_button1 = document.createElement("button");
     input_box_body_input_button1.setAttribute("type","button");
     input_box_body_input_button1.setAttribute("id","voice");
     input_box_body_input_button1.setAttribute("class","btn btn-default");
+    input_box_body_input_button1.setAttribute("onclick","speak()");
     var voice_img = document.createElement("img");
     voice_img.setAttribute("src","static/voice.png");
     voice_img.setAttribute("id","voice_img");
@@ -91,6 +85,7 @@ function search() {
     input_box_body_input_button2.setAttribute("type","button");
     input_box_body_input_button2.setAttribute("id","search");
     input_box_body_input_button2.setAttribute("class","btn btn-default");
+    input_box_body_input_button2.setAttribute("onclick","search()");
 
     var search_img = document.createElement("img");
     search_img.setAttribute("src","static/search.png");
@@ -114,6 +109,7 @@ function search() {
 
     var related_box = document.createElement("div");
     related_box.setAttribute("class", "col-md-3");
+    related_box.setAttribute("id","side");
     document.getElementById("container").appendChild(related_box);
 
     //populating div with JSON
@@ -187,7 +183,49 @@ function search() {
     output_div_head.innerHTML = "Output";
     var output_div_body = document.createElement("div");
     output_div_body.setAttribute("class", "panel-body");
-    output_div_body.innerHTML = output;
+    output_div_body.setAttribute("id","output_div");
+    // output_div_body.innerHTML = output;
+    var header = output[0];
+    var keys2 = [];
+    for(var k in header) keys2.push(k);
+    // console.log(keys2);
+    var output_div_table = document.createElement("table");
+    output_div_table.setAttribute("id","table");
+    output_div_table.setAttribute("class","table table-striped table-bordered");
+    output_div_table.setAttribute("style","width:100%");
+    output_div_body.appendChild(output_div_table);
+    // output_div_table.setAttribute("id","output_div");
+    // console.log("Len ", output[0]["actor.actor_id"]);
+    var thead = document.createElement("thead");
+    var tr_h = document.createElement("tr");
+    thead.appendChild(tr_h)
+
+    for(var i in keys2) {
+      var th = document.createElement("th");
+      th.innerHTML = keys2[i];
+      tr_h.appendChild(th);
+    }
+    
+    thead.appendChild(tr_h)
+    output_div_table.appendChild(thead);
+
+    var tbody = document.createElement("tbody");
+    
+    for (var i in output) {
+      var tr1 = document.createElement("tr");
+      for(var k in keys2) {
+        var td1 = document.createElement("td");        
+        // console.log(keys2[k])
+        td1.innerHTML = output[i][keys2[k]];
+        tr1.appendChild(td1);
+      }
+        tbody.appendChild(tr1)    
+        
+    }
+    output_div_table.appendChild(tbody);
+    $('#table').DataTable();
+    
+
     output_div.appendChild(output_div_head);
     output_div.appendChild(output_div_body);
     document.getElementById("main").appendChild(output_div);
@@ -286,3 +324,6 @@ function toggled(clicked_id) {
     height : 'toggle'
   })
 }
+
+
+

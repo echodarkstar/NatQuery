@@ -27,3 +27,13 @@ body {
 #product_img {
     height: 7em;
 }
+
+#container {
+    padding-left: 10em;
+    padding-right: 10em;
+}
+
+#output_div {
+    overflow: scroll;
+    max-height: 22em;
+}
