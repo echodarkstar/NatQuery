@@ -235,10 +235,46 @@ function search() {
     suggestion_div.setAttribute("class","panel panel-info");
     var suggestion_div_head = document.createElement("div");
     suggestion_div_head.setAttribute("class","panel-heading");
-    suggestion_div_head.innerHTML = "Suggestions";
+    suggestion_div_head.innerHTML = "Make our model learn!";
     var suggestion_div_body = document.createElement("div");
     suggestion_div_body.setAttribute("class","panel-body");
-    suggestion_div_body.innerHTML = "...";
+    // suggestion_div_body.innerHTML = "...";
+    suggestion_div_body.setAttribute("id","suggestion_box");
+    suggestion_div_body.innerHTML = `<!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+      Suggestions
+    </button>
+    
+    <!-- Modal -->
+    <div class="modal fade bd-example-modal-lg" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Suggestions</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="col-md-4" id=ques_1>Did you request these tables?
+            <input type="text" class="form-control" id="ans_3">
+            </div>
+            <div class="col-md-4" id=ques_2>Did we miss any tables?
+            <input type="text" class="form-control" id="ans_3">
+            </div>
+            <div class="col-md-4" id=ques_3>Were there any specific values that we missed?
+              <input type="text" class="form-control" id="ans_3">
+            </div>
+
+            
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
     suggestion_div.appendChild(suggestion_div_head);
     suggestion_div.appendChild(suggestion_div_body);
     related_box.appendChild(suggestion_div);
