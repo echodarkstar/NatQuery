@@ -1,4 +1,5 @@
-# NatQuery
+![decaNLP Logo](app/static/NatQuery.png)
+--------------------------------------------------------------------------------
 An application that acts as a natural language interface and visualization tool for databases. Built for the Power Of Connected Hackathon by Honeywell.
 
 ## Setup
@@ -15,7 +16,7 @@ Create a user.
 
 Create the database.
 
-`CREATE DATABASE pagila`
+`CREATE DATABASE pagila;`
 
 Connect to the database.
 
@@ -42,3 +43,12 @@ Useful psql cli commands
 - \du: List users.
 - \du __username__: List a username if present.
 - \dt : List all tables in current schema.
+
+Libraries used for NLP - nltk, spacy.
+
+## Demo
+
+The following demonstrates the basic usage of the app.
+
+![App Demo](app_demo.gif)
+
