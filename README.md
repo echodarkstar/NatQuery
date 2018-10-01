@@ -1,10 +1,10 @@
-![decaNLP Logo](app/static/NatQuery.png)
+![Logo](app/static/NatQuery.png)
 --------------------------------------------------------------------------------
 An application that acts as a natural language interface and visualization tool for databases. Built for the Power Of Connected Hackathon by Honeywell.
 
 ## Setup
 
-Download the [ pagila sql dump](https://github.com/devrimgunduz/pagila). Make sure flask,sqlalchemy,psycopg2 are installed. Install Postgres (9.6). 
+Download the [pagila sql dump](https://github.com/devrimgunduz/pagila). Make sure flask,sqlalchemy,psycopg2 are installed. Install Postgres (9.6). 
 
 Enter postgres command line.  
 
